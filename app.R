@@ -6,11 +6,9 @@ library(shiny)
 library(shinydashboard)
 library(httpuv)
 crypto <- read_csv("crypto-markets.csv")
-#Changing Date to posixct format 
+
 
 #ui
-
-
 ui <- dashboardPage(
   dashboardHeader(title = "Crypto Currency Pattern", titleWidth= 350),
   dashboardSidebar(
@@ -26,10 +24,10 @@ ui <- dashboardPage(
 )
 
 
-
+#Changing Date to posixct format 
 crypto$date <- as.POSIXct(crypto$date)
 
-#converting to xts object
+#converting to xts object using xts package for plotting dygraph
 crypto<- as.xts(crypto[,-1], order.by = crypto$date)
 
 
@@ -44,7 +42,7 @@ server <- function(input, output) {
   output$dygraph <- renderDygraph({df()[,c("open","high","close","low")] %>%
     dygraph() %>%
     dyCandlestickGroup(c('open', 'high', 'low', 'close')) %>%
-    dyCandlestick(compress= TRUE)})
+    dyCandlestick(compress= FALSE)}) #compress=TRUE to see compressed chart
 }
 
 shinyApp(ui, server)
